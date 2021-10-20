@@ -6,6 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
+import preprocess from 'svelte-preprocess';
+import replace from '@rollup/plugin-replace';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -39,8 +41,14 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		replace({
+			SERVER_ADDRESS: JSON.stringify(process.env.SERVER_ADDRESS)
+		}),
 		svelte({
-			preprocess: sveltePreprocess({ sourceMap: !production }),
+			preprocess: sveltePreprocess({
+				sourceMap: !production,
+				preprocess: preprocess(),
+			}),
 			compilerOptions: {
 				// enable run-time checks when not in production
 				dev: !production
